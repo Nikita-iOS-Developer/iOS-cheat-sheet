@@ -307,4 +307,141 @@ $ git merge main # влили main в новую ветку my-branch
 $ git push -u origin my-branch # отправили ветку my-branch в удалённый репозиторий
 ```
 
+#Продвинутая командная работа с Git#
 
+##Что такое fast-forward##
+
+Две ветки находятся в состоянии fast-forward, если одну из них можно «перемотать» вперёд и она будет содержать те же коммиты, что и другая. Это утверждение можно сформулировать иначе:
+* при слиянии этих двух веток никак не возможен конфликт;
+* истории этих двух веток не «разошлись»;
+* одна ветка является продолжением другой.
+
+Разберём на примере. Есть две ветки: main и add-docs (англ. «добавить документацию»). В ветке main четыре коммита, от неё создали ветку add-docs и добавили в неё ещё два коммита.
+
+```
+$ git branch
+* add-docs
+  main
+
+$ git log --oneline
+e08fa2a (HEAD -> add-docs) New docs 2
+fd588b2 New docs 1
+997d9ce (main) Commit 4
+0313e8e Commit 3
+5848aba Commit 2
+04923d7 Commit 1
+```
+
+Ветка add-docs «обгоняет» ветку main на два коммита. Допустим, мы хотим влить ветку add-docs в main. При этом все коммиты из add-docs можно просто «положить» в main, и они выстроятся за уже существующими.
+Результат слияния будет выглядеть так:
+
+```
+$ git checkout main
+$ git merge add-docs
+Updating 997d9ce..e08fa2a
+Fast-forward
+ docs.txt | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 docs.txt
+
+$ git log --oneline
+e08fa2a (HEAD -> main, add-docs) New docs 2
+fd588b2 New docs 1
+997d9ce Commit 4
+0313e8e Commit 3
+5848aba Commit 2
+04923d7 Commit 1
+```
+
+Обращаем внимание на два момента:
+* При слиянии веток Git выводит строку Fast-forward.
+* В истории коммитов HEAD указывает одновременно и на main, и на add-docs. После такого слияния эти ветки одинаковые: в них одни и те же коммиты.
+
+Git просто добавил коммиты из add-docs в ветку main, или перемотал main вперёд до состояния add-docs. Отсюда и название «перемотка».
+
+##Можно ли отключить fast-forward##
+
+Fast-forward слияние веток можно отключить флагом --no-ff. Например: git merge --no-ff add-docs. Также его можно отключить «навсегда» (до тех пор, пока мы не вернем настройку «как было») с помощью настройки merge.ff: git config [--global] merge.ff false.
+Если отключить слияние в режиме fast-forward, вместо «перемотки» ветки Git создаст в ней коммит слияния (англ. merge commit) — в обиходе его называют merge-коммит или мёрж-коммит. В этом случае результат «вливания» ветки add-docs в main выглядел бы так:
+
+```
+# находимся в ветке main
+# --no-edit отключает ввод сообщения для merge-коммита
+# --no-ff отключает fast-forward слияние веток
+$ git merge --no-edit --no-ff add-docs
+Merge made by the 'ort' strategy.
+ docs.txt | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 docs.txt
+
+# с флагом --graph
+# Git нарисует ветки с помощью «палочек» и «звёздочек»
+# получившийся коммит слияния: 6814789
+$ git log --graph --oneline
+*   6814789 (HEAD -> main) Merge branch 'add-docs'
+|\
+| * e08fa2a (add-docs) New docs 2
+| * fd588b2 New docs 1
+|/
+* 997d9ce Commit 4
+* 0313e8e Commit 3
+* 5848aba Commit 2
+* 04923d7 Commit 1
+```
+
+#Non-fast-forward#
+
+##Состояние non-fast-forward##
+
+Вернёмся к примеру с ветками main и add-docs и представим такую ситуацию: истории двух веток «разошлись». Это значит, что их коммиты уже нельзя выстроить в одну линию.
+Например, после «отделения» add-docs в ветку main добавили новый коммит Commit 5:
+
+```
+# команде git log можно указать несколько веток, и тогда она выведет их все
+$ git log --graph --oneline main add-docs
+* 15d3f04 (HEAD -> main) Commit 5
+| * 8de42eb (add-docs) New docs 2
+| * 4d3c346 New docs 1
+|/
+* 73def1e Commit 4
+* 9c30ab3 Commit 3
+* 83cc5ec Commit 2
+* 8e87fb2 Commit 1
+```
+
+Теперь просто «положить» все коммиты из add-docs в main не получится. Например, коммит 5 из main  может конфликтовать с каким-нибудь коммитом из ветки add-docs. То есть содержать изменения в тех же файлах (и в тех же строках), что и коммит 5.
+
+При слиянии не-fast-forward веток Git создаёт коммит слияния:
+
+```
+# находимся в ветке main
+# --no-edit избавляет от необходимости вводить сообщение для merge-коммита
+$ git merge --no-edit add-docs
+Merge made by the 'ort' strategy.
+ docs.txt | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 docs.txt
+
+# коммит слияния: 34f5f8f
+$ git log --graph --oneline
+*   34f5f8f (HEAD -> main) Merge branch 'add-docs'
+|\
+| * 8de42eb (add-docs) New docs 2
+| * 4d3c346 New docs 1
+* | 15d3f04 Commit 5
+|/
+* 73def1e Commit 4
+* 9c30ab3 Commit 3
+* 83cc5ec Commit 2
+* 8e87fb2 Commit 1
+```
+
+Если конфликтов при слиянии нет, команда git merge отработает почти автоматически — только предложит нам ввести сообщение для нового коммита слияния.
+
+*Чаще всего сообщения к коммитам слияния не редактируют и оставляют «как предложил Git». Для таких случаев удобен флаг --no-edit: git merge --no-edit <дочерняя ветка>.*
+
+##Разрешение конфликта#
+
+Ссылки на материал по разрешению конфликтов:
+[В ручную или vimdiff] (https://practicum.yandex.ru/trainer/git-basics/lesson/df8f8fed-e3f8-44bd-90e4-3e67bc02e507/)
+[Visual Studio Code](https://practicum.yandex.ru/trainer/git-basics/lesson/653d1bce-8700-46db-8ddd-cf39a0575a1f/)
