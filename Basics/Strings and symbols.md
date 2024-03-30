@@ -13,6 +13,13 @@ let someString = "Hello world!"
 ```
 let wiseWords = "\"Imagination is more important than knowledge\" - Einstein"
 ```
+Чтобы перенести строку используем знак переноса строки \n:
+
+```
+let name = "Ivan\nIvanov"
+//Ivan
+//Ivanov
+```
 
 ## Многострочные литералы строк
 
@@ -60,14 +67,14 @@ It also ends with a line break.
 """
 ```
 
-Многострочная строка может иметь отступы для соответствия окружающему ее коду. Пробел до закрывающей группы двойных кавычек (""") сообщает Swift, сколько пробелов нужно игнорировать в начале каждой строки. Если же мы напишем дополнительные пробелы напротив какой-либо строки к тем, которые стоят напротив закрывающих кавычек, то эти дополнительные пробелы уже будут включены в значение строки.
+Многострочная строка может иметь отступы для соответствия окружающему ее коду. Пробел до закрывающей группы двойных кавычек (""") сообщает Swift, сколько пробелов нужно игнорировать в начале каждой строки. Если нам не нравится что весь текст прижат к краю к нумерации строк кода то мы можем сдвинуть нижние кавычки в лево и весь текст будет отталкиваться от нижних ковычек:
 
 ```
 let linesWithIndentation = """
-Эта строка начинается без пробелов в начале.
-Эта строка имеет 4 пробела.
-Эта строка так же начинается без пробелов.
-"""
+   Эта строка начинается без пробелов в начале.
+       Эта строка имеет 4 пробела.
+   Эта строка так же начинается без пробелов.
+   """
 ```
 
 ## Строка является типом значения
@@ -176,36 +183,36 @@ greeting[index]
 
 ```
 for index in greeting.indices {
- print("\(greeting[index]) ", terminator: " ")
- }
+print("\(greeting[index]) ", terminator: " ")
+}
 // Выведет "G u t e n T a g !"
 ```
 
-*Вы можем использовать свойства startIndex, endIndex и методы index(before:), index(after:) и index(_:offsetBy:) с любым типом, который соответствует протоколу Collection. Это включает в себя String, как и показано тут, различные типы коллекций, например Array, Dictionary и Set.
- 
- ### Добавление и удаление
- 
- Для того, чтобы вставить символ в строку по указанному индексу, используем insert(_:at:) метод, а для того, чтобы вставить содержимое другой строки по указанному индексу, используем метод insert(contentsOf:at:):
- 
- ```
- var welcome = "hello"
- welcome.insert("!", at: welcome.endIndex)
+*Вы можем использовать свойства startIndex, endIndex и методы index(before:), index(after:) и index(_:offsetBy:) с любым типом, который соответствует протоколу Collection. Это включает в себя String, как и показано тут, различные типы коллекций, например Array, Dictionary и Set.*
+
+### Добавление и удаление
+
+Для того, чтобы вставить символ в строку по указанному индексу, используем insert(_:at:) метод, а для того, чтобы вставить содержимое другой строки по указанному индексу, используем метод insert(contentsOf:at:):
+
+```
+var welcome = "hello"
+welcome.insert("!", at: welcome.endIndex)
 // welcome теперь равен "hello!"
 welcome.insert(contentsOf:" there", at: welcome.index(before: welcome.endIndex))
 // welcome теперь равен "hello there!”
- ```
- 
- Для того, чтобы удалить символ из строки по указанному индексу используем remove(at:), если мы хотим удалить значения по указанному диапазону индексов, используем метод removeSubrange(_:):
- 
-```
-welcome.remove(at: welcome.index(before: welcome.endIndex))
- // welcome теперь равно "hello there"
-let range = welcome.index(welcome.endIndex, offsetBy: -6)..<welcome.endIndex
- welcome.removeSubrange(range)
- // welcome теперь равно "hello”
 ```
 
-*Мы можем использовать методы insert(_:at:), insert(contentsOf:at:), remove(at:) и removeSubrange(_:) с любыми типами, которые соответствуют протоколу RangeReplaceableCollection. Это включает в себя String, как показано тут, а так же коллекции, такие как Array, Dictionary и Set.
+Для того, чтобы удалить символ из строки по указанному индексу используем remove(at:), если мы хотим удалить значения по указанному диапазону индексов, используем метод removeSubrange(_:):
+
+```
+welcome.remove(at: welcome.index(before: welcome.endIndex))
+// welcome теперь равно "hello there"
+let range = welcome.index(welcome.endIndex, offsetBy: -6)..<welcome.endIndex
+welcome.removeSubrange(range)
+// welcome теперь равно "hello”
+```
+
+*Мы можем использовать методы insert(_:at:), insert(contentsOf:at:), remove(at:) и removeSubrange(_:) с любыми типами, которые соответствуют протоколу RangeReplaceableCollection. Это включает в себя String, как показано тут, а так же коллекции, такие как Array, Dictionary и Set.*
 
 ## Подстроки
 
@@ -232,7 +239,7 @@ Swift предусматривает три способа сравнения т
 let quotation = "Мы с тобой похожи"
 let sameQuotation = "Мы с тобой похожи"
 if quotation == sameQuotation {
-  print("Эти строки считаются равными")
+print("Эти строки считаются равными")
 }
 // Выведет "Эти строки считаются равными"
 ```
@@ -247,7 +254,7 @@ let eAcuteQuestion = "Voulez-vous un caf\u{E9}?"
 // "Voulez-vous un café?" используем LATIN SMALL LETTER E и COMBINING ACUTE ACCENT
 let combinedEAcuteQuestion = "Voulez-vous un caf\u{65}\u{301}?"
 if eAcuteQuestion == combinedEAcuteQuestion {
-  print("Эти строки считаются равными")
+print("Эти строки считаются равными")
 }
 // Выведет "Эти строки считаются равными"
 ```
@@ -258,12 +265,12 @@ if eAcuteQuestion == combinedEAcuteQuestion {
 let latinCapitalLetterA: Character = "\u{41}"
 let cyrillicCapitalLetterA: Character = "\u{0410}"
 if latinCapitalLetterA != cyrillicCapitalLetterA {
-  print("Эти строки считаются не равными")
+print("Эти строки считаются не равными")
 }
 // Выведет "Эти строки считаются не равными"
 ```
 
-*Сравнение строк и символов не зависит от локализации
+*Сравнение строк и символов не зависит от локализации*
 
 ### Равенство префиксов и суффиксов
 
@@ -272,41 +279,41 @@ if latinCapitalLetterA != cyrillicCapitalLetterA {
 
 ```
 let romeoAndJuliet = [
- "Act 1 Scene 1: Verona, A public place",
- "Act 1 Scene 2: Capulet's mansion",
- "Act 1 Scene 3: A room in Capulet's mansion",
- "Act 1 Scene 4: A street outside Capulet's mansion",
- "Act 1 Scene 5: The Great Hall in Capulet's mansion",
- "Act 2 Scene 1: Outside Capulet's mansion",
- "Act 2 Scene 2: Capulet's orchard",
- "Act 2 Scene 3: Outside Friar Lawrence's cell",
- "Act 2 Scene 4: A street in Verona",
- "Act 2 Scene 5: Capulet's mansion",
- "Act 2 Scene 6: Friar Lawrence's cell"
- ]
- 
- #Используем hasPrefix(_:) метод с массивом romeoAndJuliet для подсчета количества сцен в первом акте пьесы:
- var act1SceneCount = 0
+"Act 1 Scene 1: Verona, A public place",
+"Act 1 Scene 2: Capulet's mansion",
+"Act 1 Scene 3: A room in Capulet's mansion",
+"Act 1 Scene 4: A street outside Capulet's mansion",
+"Act 1 Scene 5: The Great Hall in Capulet's mansion",
+"Act 2 Scene 1: Outside Capulet's mansion",
+"Act 2 Scene 2: Capulet's orchard",
+"Act 2 Scene 3: Outside Friar Lawrence's cell",
+"Act 2 Scene 4: A street in Verona",
+"Act 2 Scene 5: Capulet's mansion",
+"Act 2 Scene 6: Friar Lawrence's cell"
+]
+
+#Используем hasPrefix(_:) метод с массивом romeoAndJuliet для подсчета количества сцен в первом акте пьесы:
+var act1SceneCount = 0
 for scene in romeoAndJuliet {
-  if scene.hasPrefix("Act 1 ") {
-    act1SceneCount += 1
-  }
+if scene.hasPrefix("Act 1 ") {
+act1SceneCount += 1
 }
- print("Всего \(act1SceneCount) сцен в Акте 1")
- // Выведет "Всего 5 сцен в Акте 1"
+}
+print("Всего \(act1SceneCount) сцен в Акте 1")
+// Выведет "Всего 5 сцен в Акте 1"
 
 #Точно так же, использование hasSuffix(_:) метода для подсчета количества сцен, которые происходят внутри или вокруг особняка Капулетти и клетки монаха Лоренцо:
 var mansionCount = 0
- var cellCount = 0
- for scene in romeoAndJuliet {
-   if scene.hasSuffix("Capulet's mansion") {
-     mansionCount += 1
-   } else if scene.hasSuffix("Friar Lawrence's cell") {
-     cellCount += 1
-   }
- }
- print("\(mansionCount) сцен в особняке; \(cellCount) тюремные сцены")
- // выводит "6 сцен в особняке; 2 тюремные сцены"
- ```
- 
- 
+var cellCount = 0
+for scene in romeoAndJuliet {
+if scene.hasSuffix("Capulet's mansion") {
+mansionCount += 1
+} else if scene.hasSuffix("Friar Lawrence's cell") {
+cellCount += 1
+}
+}
+print("\(mansionCount) сцен в особняке; \(cellCount) тюремные сцены")
+// выводит "6 сцен в особняке; 2 тюремные сцены"
+```
+
+
