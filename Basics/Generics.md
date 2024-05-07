@@ -153,4 +153,62 @@ if let foundIndex = findIndex(of: "llama", in: strings) {
 
 ## Associated Types
 
+Ассоциированные типы в основном встречаются в протоколах. Когда мы хотим чтобы класс, структура или перечисление сами указывали тип с которым они хотят работать, мы используем Associated types.
+Ниже пример такого протокола:
 
+```
+protocol Container {
+    associatedtype Item
+    mutating func append(_ item: Item)
+    var count: Int { get }
+    subscript(i: Int) -> Item { get }
+}
+
+struct IntStack: Container {
+    // original IntStack implementation
+    var items: [Int] = []
+    mutating func push(_ item: Int) {
+        items.append(item)
+    }
+    mutating func pop() -> Int {
+        return items.removeLast()
+    }
+    // conformance to the Container protocol
+    typealias Item = Int
+    mutating func append(_ item: Int) {
+        self.push(item)
+    }
+    var count: Int {
+        return items.count
+    }
+    subscript(i: Int) -> Int {
+        return items[i]
+    }
+}
+```
+
+В коде выше чтобы протокол мог быть дженериком внутри его описания пишется ключевое слово associatedtype и название нашего типа. При подписании объекта под этот протокол, внутри объекта пишется ключевое слово typealias, название нашего элемента и через знак присваивания мы указываем тип данных который хотим использовать.
+Если мы подпишем дженерик структуру под дженерик протокол то слово typealias можно не писать так как swift сам сделает вывод что тип в протоколе будет соответствовать типу дженерик структуры. Но лучше для уточнения написать typealias в структуре:
+
+```
+struct Stack<Element>: Container {
+    // original Stack<Element> implementation
+    var items: [Element] = []
+    mutating func push(_ item: Element) {
+        items.append(item)
+    }
+    mutating func pop() -> Element {
+        return items.removeLast()
+    }
+    // conformance to the Container protocol
+    mutating func append(_ item: Element) {
+        self.push(item)
+    }
+    var count: Int {
+        return items.count
+    }
+    subscript(i: Int) -> Element {
+        return items[i]
+    }
+}
+```
